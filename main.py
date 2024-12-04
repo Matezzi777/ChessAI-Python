@@ -1,12 +1,13 @@
 from tkinter import *
+from tkinter.ttk import *
 
-window = Tk()
-window.geometry('400x400')
-window.title('AI Chess')
-window['bg'] = 'blue'
-window.resizable(width = False, height = False)
+# Window Definition
+window = Tk()									# Declare window
+window.title('AI Chess')						# Set window's title
+window.geometry('900x900')						# Set window's size
+window.resizable(width = False, height = False)	# Lock window's size
+window.configure(bg="#333333")					# Set window's background color
 
-label = Label(window, text="Click counter", font=("Arial", 20, "bold"), fg="white", bg="blue").pack(side=TOP, pady=150)
-button = Button(window, text="Click me !", bg = "red", fg = "white").pack(side=TOP, pady=0)
+
 
 window.mainloop()
