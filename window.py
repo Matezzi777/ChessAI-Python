@@ -4,7 +4,7 @@ from tkinter import ttk
 def create_window() -> tk.Tk:
 	window = tk.Tk()
 	window.title('AI Chess')
-	window.geometry('1200x900')
+	window.geometry('1250x900')
 	window.resizable(width=False, height=False)
 	window.configure(bg="#333333")
 	return (window)

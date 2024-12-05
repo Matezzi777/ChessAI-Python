@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter.constants import *
 
 def create_board(window: tk.Tk) -> tk.Canvas:
 	canvas = tk.Canvas(window, width=800, height=800, bg="#333333")
@@ -77,5 +78,43 @@ def create_board(window: tk.Tk) -> tk.Canvas:
 	return (canvas)
 
 def create_side_canvas(window: tk.Tk) -> tk.Canvas:
-	side_canvas = tk.Canvas(window, width=275, height=800, bg="#333333")
+	side_canvas = tk.Canvas(window, width=300, height=800, bg="#333333")
 	return (side_canvas)
+
+def place_pieces(canvas: tk.Canvas, board: list[str]) -> None:
+	y: int = 0
+	for line in board:
+		x: int = 0
+		while (x < 8):
+			if (line[x] == 'K'):
+				piece = tk.PhotoImage(file="pieces/white_king.png")
+			elif (line[x] == 'Q'):
+				piece = tk.PhotoImage(file="pieces/white_queen.png")
+			elif (line[x] == 'B'):
+				piece = tk.PhotoImage(file="pieces/white_bishop.png")
+			elif (line[x] == 'N'):
+				piece = tk.PhotoImage(file="pieces/white_horse.png")
+			elif (line[x] == 'R'):
+				piece = tk.PhotoImage(file="pieces/white_rook.png")
+			elif (line[x] == 'P'):
+				piece = tk.PhotoImage(file="pieces/white_pawn.png")
+			if (line[x] == 'k'):
+				piece = tk.PhotoImage(file="pieces/black_king.png")
+			elif (line[x] == 'q'):
+				piece = tk.PhotoImage(file="pieces/black_queen.png")
+			elif (line[x] == 'b'):
+				piece = tk.PhotoImage(file="pieces/black_bishop.png")
+			elif (line[x] == 'n'):
+				piece = tk.PhotoImage(file="pieces/black_horse.png")
+			elif (line[x] == 'r'):
+				piece = tk.PhotoImage(file="pieces/black_rook.png")
+			elif (line[x] == 'p'):
+				piece = tk.PhotoImage(file="pieces/black_pawn.png")
+			else:
+				piece = None
+
+			# if (not piece == None):
+			if (piece):
+				canvas.create_image((x*100, y*100), image=piece, anchor=NW)
+			x += 1
+		y += 1
