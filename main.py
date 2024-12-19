@@ -1,29 +1,12 @@
-import pygame # type: ignore
+import pygame
+from game import Game
 
-# pygame setup
 pygame.init()
-window = pygame.display
-window.set_caption('ChessAI')
+window = pygame.display.set_mode((900, 900))
+pygame.display.set_caption('ChessAI')
+letter_font = pygame.font.SysFont('Arial', 24)
 
-screen = window.set_mode((900, 900))
-clock = pygame.time.Clock()
-running = True
+game = Game(window, letter_font)
 
-while running:
-    # poll for events
-    # pygame.QUIT event means the user clicked X to close your window
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-
-    # fill the screen with a color to wipe away anything from last frame
-    screen.fill("gray")
-
-    # RENDER YOUR GAME HERE
-
-    # flip() the display to put your work on screen
-    pygame.display.flip()
-
-    clock.tick(60)  # limits FPS to 60
-
+game.run()
 pygame.quit()
