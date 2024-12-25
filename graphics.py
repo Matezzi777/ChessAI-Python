@@ -6,7 +6,7 @@ WHITE_TILE_COLOR = (237, 237, 237)
 BLACK_TILE_COLOR = (49, 100, 71)
 LETTER_COLOR = (148, 147, 145)
 
-def put_background(screen, letter_font):
+def put_background(screen, letter_font) -> None:
     screen.fill(BACKGROUND_COLOR)
     # row 1
     pygame.draw.rect(screen, BLACK_TILE_COLOR, pygame.Rect(50, 750, 100, 100))
@@ -99,7 +99,7 @@ def put_background(screen, letter_font):
     screen.blit(letter_font.render('g', True, LETTER_COLOR), (685, 865))
     screen.blit(letter_font.render('h', True, LETTER_COLOR), (785, 865))
 
-def put_pieces(screen, board, pieces):
+def put_pieces(screen, board, pieces) -> None:
     i: int = 0
     while i < 8:
         j: int = 0
@@ -139,6 +139,11 @@ def put_pieces(screen, board, pieces):
             j += 1
         i += 1
 
-def place_piece(screen, piece, x: int, y: int):
+def place_piece(screen, piece, x: int, y: int) -> None:
     piece.convert()
     screen.blit(piece, (y*100 + 50, x*100 + 50))
+
+def place_valid_move(screen, x: int, y: int) -> None:
+    circle = pygame.image.load('pieces/yellow_circle.png')
+    circle.convert()
+    screen.blit(circle, (y*100 + 50, x*100 + 50))

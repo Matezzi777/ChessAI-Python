@@ -9,13 +9,14 @@ RIGHT_CLICK = 3
 
 class Game:
     def __init__(self, screen, letter_font):
-        self.screen = screen
-        self.letter_font = letter_font
-        self.running = True
-        self.clock = pygame.time.Clock()
-        self.board = init_board()
-        self.round: int = 1
-        self.piece_selected = None
+        self.screen = screen                                                #La variable de la fenêtre de jeu
+        self.letter_font = letter_font                                      #La police de caractère des chiffres et lettres des lignes et colonnes
+        self.running = True                                                 #La variable permettant d'arrêter la boucle de jeu
+        self.clock = pygame.time.Clock()                                    #Un genre de métronome permettant de lisser les performance entre les différents ordinateurs à 60fps
+        self.board = init_board()                                           #Un tableau de caractères représentant le plateau
+        self.round: int = 1                                                 #Le compteur de tour pour savoir si c'est au tour des Noirs ou des Blancs
+        self.piece_selected = None                                          #Un tuple représentant la position de la pièce sélectionnée s'il y en a une. Vaut None si aucune pièce n'est sélectionnée
+        self.valid_moves = None                                             #La liste des tuples représentant les coups légaux de la pièce sélectionnée s'il y en a une. Vaut None si aucune pièce n'est sélectionnée
 
     def handling_events(self):
         for event in pygame.event.get():
@@ -24,11 +25,11 @@ class Game:
             if event.type == pygame.MOUSEBUTTONDOWN:                        # Si l'utilisateur clique dans la fenêtre
                 if (50 < event.pos[0] < 850 and 50 < event.pos[1] < 850):       # Si l'utilisateur clique sur l'échiquier
                     if (event.button == LEFT_CLICK):                                # Si c'est un clic gauche
-                        if (clicked_on_piece(self.board, event.pos, self.round)):                    # Si le clic est sur une pièce alliée
+                        if (clicked_on_piece(self.board, event.pos, self.round)):       # Si le clic est sur une pièce alliée
                             ...
                         else:                                                           # Sinon
                             if (self.piece_selected):                                       # Si une pièce était sélectionnée
-                                if (is_legal_move(self.board, self.piece_selected, event.pos)):             # Si le mouvement est légal
+                                if (is_legal_move(self.board, self.piece_selected, event.pos)): # Si le mouvement est légal
                                     ...
                                 else:                                                           # Si le mouvement est illégal
                                     ...
@@ -42,6 +43,9 @@ class Game:
 
     def display(self):
         put_background(self.screen, self.letter_font)
+        if (self.piece_selected):
+            for move in self.valid_moves:
+                place_valid_move(move)
         put_pieces(self.screen, self.board, PIECES)
         pygame.display.flip()
 
