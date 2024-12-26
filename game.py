@@ -2,6 +2,7 @@ import pygame
 from board import *
 from graphics import *
 from pieces import PIECES
+from moves import *
 
 # Définition de constantes
 LEFT_CLICK = 1
@@ -36,8 +37,12 @@ class Game:
                     if (event.button == LEFT_CLICK):
                         #Une pièce est sélectionnée
                         if (self.piece_selected):
+                            #Si le clic est sur une autre pièce de la bonne couleur
+                            if (clicked_on_allied_piece(self.board, event.pos, self.turn)):
+                                self.piece_selected = (clickx_to_boardx(event.pos[0]),clicky_to_boardy(event.pos[1]))
+                                self.valid_moves = get_valid_moves(self.board, self.piece_selected)
                             #Si le coup est légal
-                            if ((clickx_to_boardx(event.pos[0]), clicky_to_boardy(event.pos[1])) in self.valid_moves):
+                            elif (self.valid_moves and (clickx_to_boardx(event.pos[0]), clicky_to_boardy(event.pos[1])) in self.valid_moves):
                                 make_move(self.board, self.piece_selected, (clickx_to_boardx(event.pos[0]), clicky_to_boardy(event.pos[1])))
                                 self.piece_selected = None
                                 self.valid_moves = None
@@ -51,7 +56,7 @@ class Game:
                             #Clic sur une pièce de la bonne couleur
                             if (clicked_on_allied_piece(self.board, event.pos, self.turn)):
                                 self.piece_selected = (clickx_to_boardx(event.pos[0]),clicky_to_boardy(event.pos[1]))
-                                self.valid_moves = get_valid_moves(self.piece_selected)
+                                self.valid_moves = get_valid_moves(self.board, self.piece_selected)
                     #Clic droit
                     elif (event.button == RIGHT_CLICK):
                         if (self.piece_selected):
@@ -63,7 +68,7 @@ class Game:
 
     def display(self):
         put_background(self.screen, self.letter_font)
-        if (self.piece_selected):
+        if (self.piece_selected and self.valid_moves):
             for move in self.valid_moves:
                 place_valid_move(self.screen, move[0], move[1])
         put_pieces(self.screen, self.board, PIECES)
@@ -83,9 +88,25 @@ def make_move(board, origin: tuple[int, int], target: tuple[int, int]) -> None:
     ...
 
 #Retourne la liste des mouvements légaux pour la pièce sélectionnée
-def get_valid_moves(piece_position: tuple[int, int]) -> list[tuple[int, int]] | None:
+def get_valid_moves(board, piece_position: tuple[int, int]) -> list[tuple[int, int]] | None:
     valid_moves: list[tuple[int, int]] = []
-    ...
+    piece_selected = board[piece_position[1]][piece_position[0]]
+    print(f"Piece selected : '{piece_selected}'.")
+    if (piece_selected == 'P' or piece_selected == 'p'):
+        valid_moves = get_pawn_valid_moves(board, piece_selected, piece_position[0], piece_position[1])
+    elif (piece_selected == 'K' or piece_selected == 'k'):
+        valid_moves = get_king_valid_moves(board, piece_selected, piece_position[0], piece_position[1])
+    elif (piece_selected == 'Q' or piece_selected == 'q'):
+        valid_moves = get_queen_valid_moves(board, piece_selected, piece_position[0], piece_position[1])
+    elif (piece_selected == 'B' or piece_selected == 'b'):
+        valid_moves = get_bishop_valid_moves(board, piece_selected, piece_position[0], piece_position[1])
+    elif (piece_selected == 'N' or piece_selected == 'n'):
+        valid_moves = get_knight_valid_moves(board, piece_selected, piece_position[0], piece_position[1])
+    elif (piece_selected == 'R' or piece_selected == 'r'):
+        valid_moves = get_rook_valid_moves(board, piece_selected, piece_position[0], piece_position[1])
+    else:
+        print(f"ERROR : Unknown piece selected.")
+
     return (valid_moves)
 
 #Retourne la colonne correspondante à la case cliquée (0-7)
@@ -128,17 +149,15 @@ def clicky_to_boardy(posy: int) -> int:
 
 #Retourne True si le clic se situe sur une pièce de la couleur du joueur dont c'est le tour sinon renvoie False
 def clicked_on_allied_piece(board, position: tuple[int, int], tour: int) -> bool:
-    if (tour % 2 == 0):                                                     # Si c'est au tour des Noirs
+    if (tour % 2 == 0):
         set = ['k', 'q', 'b', 'n', 'r', 'p']
-    else:                                                                   # Si c'est au tour des Blancs
+    else:
         set = ['K', 'Q', 'B', 'N', 'R', 'P']
 
     x = clickx_to_boardx(position[0])
     y = clicky_to_boardy(position[1])
 
-    if (board[y][x] in set):                                                # Si la pièce appartient à la couleur dont c'est le tour
-        print(f"({position[0]},{position[1]} -> [{x+1},{8-y}]) - Click on allied piece [{board[y][x]}].")
+    if (board[y][x] in set):
         return (True)
-    else:                                                                   # Sinon
-        print(f"({position[0]},{position[1]} -> [{x+1},{8-y}]) - Click on something else [{board[y][x]}].")
+    else:
         return (False)

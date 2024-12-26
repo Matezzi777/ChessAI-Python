@@ -146,4 +146,4 @@ def place_piece(screen, piece, x: int, y: int) -> None:
 def place_valid_move(screen, x: int, y: int) -> None:
     circle = pygame.image.load('pieces/yellow_circle.png')
     circle.convert()
-    screen.blit(circle, (y*100 + 50, x*100 + 50))
+    screen.blit(circle, (x*100 + 50, y*100 + 50))
