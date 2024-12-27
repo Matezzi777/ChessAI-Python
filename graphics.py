@@ -1,4 +1,5 @@
 import pygame
+from pieces import Piece, King
 
 #COLORS
 BACKGROUND_COLOR = (48, 46, 43)
@@ -107,7 +108,9 @@ def put_pieces(screen, board, pieces) -> None:
             if board[i][j] == ' ':
                 piece_to_place = None
             elif board[i][j] == 'k':
-                piece_to_place = pieces[6]
+                piece = King("black",)
+                piece_to_place = pygame.image.load(piece.image)
+                # piece_to_place = pieces[6]
             elif board[i][j] == 'K':
                 piece_to_place = pieces[0]
             elif board[i][j] == 'q':
@@ -139,6 +142,16 @@ def put_pieces(screen, board, pieces) -> None:
             j += 1
         i += 1
 
+def put_pieces2(screen, board) -> None:
+    i: int = 0
+    while i < 8:
+        j: int = 0
+        while j < 8:
+            if (board[i][j]):
+                place_piece(screen, pygame.image.load(board[i][j].image), i, j)
+            j += 1
+        i += 1
+
 def place_piece(screen, piece, x: int, y: int) -> None:
     piece.convert()
     screen.blit(piece, (y*100 + 50, x*100 + 50))
@@ -146,4 +159,4 @@ def place_piece(screen, piece, x: int, y: int) -> None:
 def place_valid_move(screen, x: int, y: int) -> None:
     circle = pygame.image.load('pieces/yellow_circle.png')
     circle.convert()
-    screen.blit(circle, (x*100 + 50, y*100 + 50))
+    screen.blit(circle, (y*100 + 50, x*100 + 50))
