@@ -67,7 +67,7 @@ def is_on_allied_piece(board, move: tuple[int, int], allied_pieces: list) -> boo
 
 #Vérifie si le déplacement met le roi allié en échec
 def discover_allied_king(board, origin: tuple[int, int], move: tuple[int, int]) -> bool:
-	potential_board = board
+	potential_board = copy_board(board)
 	piece = board[origin[1]][origin[0]]
 	potential_board[origin[1]][origin[0]] = ' '
 	potential_board[move[1]][move[0]] = piece
@@ -76,10 +76,46 @@ def discover_allied_king(board, origin: tuple[int, int], move: tuple[int, int]) 
 	elif (piece in ['P', 'R', 'N', 'B', 'Q', 'K']):
 		is_white = True
 	else:
-		print(f"ERROR : Piece appeard to be not Black or White (possibly an empty tile)")
+		print(f"ERROR : Piece appeard to be not Black or White (possibly an empty tile) ('{piece}').")
 	if (is_allied_check(potential_board, is_white)):
 		return (True)
 	return (False)
 
-def is_allied_check(board, is_white: bool):
-	...
+#Vérifie si le roi de la couleur spécifiée est en échec dans cette position
+def is_allied_check(board, is_white: bool) -> bool:
+	king_position: tuple[int, int] = get_king_pos(board, is_white)
+	if (is_white):
+		...
+	else:
+		...
+	return (False)
+
+#Retourne la position du roi de la couleur spécifiée sur l'échiquier
+def get_king_pos(board, is_white) -> tuple[int, int]:
+	if (is_white):
+		target = 'K'
+	else:
+		target = 'k'
+	i: int = 0
+	while (i < 8):
+		j: int = 0
+		while (j < 8):
+			if (board[i][j] == target):
+				return ((j, i))
+			j += 1
+		i += 1
+	print(f"ERROR : Le Roi n'a pas été trouvé sur le plateau.")
+
+#Retourne une copie du plateau de jeu
+def copy_board(board) -> list[list]:
+	new_board: list[list] = []
+	i: int = 0
+	while (i < 8):
+		row: list = []
+		j: int = 0
+		while (j < 8):
+			row.append(board[i][j])
+			j += 1
+		new_board.append(row)
+		i += 1
+	return (new_board)

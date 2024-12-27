@@ -85,7 +85,26 @@ class Game:
 
 #Effectue le mouvement sélectionné
 def make_move(board, origin: tuple[int, int], target: tuple[int, int]) -> None:
-    ...
+    piece = board[origin[1]][origin[0]]
+    
+    if (piece in ['K', 'Q', 'B', 'N', 'R', 'P']):
+        enemy_pieces = ['k', 'q', 'b', 'n', 'r', 'p']
+    else:
+        enemy_pieces = ['K', 'Q', 'B', 'N', 'R', 'P']
+    
+    piece_on_target = board[target[1]][target[0]]
+    
+    board[origin[1]][origin[0]] = ' '
+    board[target[1]][target[0]] = piece
+
+    if (piece_on_target in enemy_pieces):
+        pygame.mixer.music.load('sounds/capture_sound.mp3')
+        pygame.mixer.music.play()
+    else:
+        pygame.mixer.music.load('sounds/move_sound.mp3')
+        pygame.mixer.music.play()
+
+
 
 #Retourne la liste des mouvements légaux pour la pièce sélectionnée
 def get_valid_moves(board, piece_position: tuple[int, int]) -> list[tuple[int, int]] | None:
