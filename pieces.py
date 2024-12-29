@@ -49,8 +49,7 @@ class Piece:
 	
 	def get_valid_movesss(self, row: int, col: int):
 		valid_moves: list[tuple[int, int]] = []
-		print(f"row : {row}")
-		print(f"col : {col}")
+		print(f"Tile selected : {['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'][col]}{8-row}")
 		tupl: tuple[int, int] = (row-1, col)
 		valid_moves.append(tupl)
 		return (valid_moves)
