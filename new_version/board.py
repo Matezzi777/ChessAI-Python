@@ -1,10 +1,5 @@
 from pieces import King, Queen, Bishop, Knight, Rook, Pawn
 
-class Move:
-	def __init__(self, origin: tuple[int, int], target: tuple[int, int]):
-		self.origin = origin
-		self.target = target
-
 class Board:
 	def __init__(self):
 		self.board: list[list] = init_board()
@@ -15,7 +10,7 @@ class Board:
 	def evaluate_position(self) -> float:
 		...
 
-	def get_best_move(self, turn) -> Move:
+	def get_best_move(self, turn) -> tuple[int, int]:
 		...
 
 def init_board() -> list[list]:
