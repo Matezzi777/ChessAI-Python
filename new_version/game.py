@@ -1,4 +1,5 @@
 import pygame
+from new_board import Board, Coup
 from pieces import Piece, King, Queen, Bishop, Knight, Rook, Pawn
 
 # Définition de constantes
@@ -7,8 +8,7 @@ RIGHT_CLICK = 3
 
 class Game:
 	def __init__(self, window, font):
-		self.window = window
-		self.font = font
+		self.board = Board(window, font)
 		self.clock = pygame.time.Clock()
 		self.running: bool = True
 		self.turn: int = 1
@@ -27,7 +27,8 @@ class Game:
 		...
 
 	def display(self):
-		...
+		self.board.display()
+		pygame.display.flip()
 
 	def run(self):
 		while (self.running):

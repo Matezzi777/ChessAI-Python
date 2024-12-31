@@ -1,6 +1,6 @@
 import pygame
 
-PATH_IMG_FOLDER: str = "../pieces"
+PATH_IMG_FOLDER: str = "./pieces"
 
 class Piece:
 	def __init__(self):
@@ -39,9 +39,10 @@ class King(Piece):
 		...
 
 class Queen(Piece):
-	def __init__(self, color: str):
+	def __init__(self, color: str, id: int):
 		super().__init__()
 		self.color: str = color
+		self.id = id
 		self.type: str = 'queen'
 		self.position: tuple[int, int]
 		self.image: str = f"{PATH_IMG_FOLDER}/{color}_queen.png"
@@ -53,9 +54,10 @@ class Queen(Piece):
 		...
 
 class Bishop(Piece):
-	def __init__(self, color: str):
+	def __init__(self, color: str, id: int):
 		super().__init__()
 		self.color: str = color
+		self.id = id
 		self.type: str = 'bishop'
 		self.position: tuple[int, int]
 		self.image: str = f"{PATH_IMG_FOLDER}/{color}_bishop.png"
@@ -67,9 +69,10 @@ class Bishop(Piece):
 		...
 
 class Knight(Piece):
-	def __init__(self, color: str):
+	def __init__(self, color: str, id: int):
 		super().__init__()
 		self.color: str = color
+		self.id = id
 		self.type: str = 'knight'
 		self.position: tuple[int, int]
 		self.image: str = f"{PATH_IMG_FOLDER}/{color}_knight.png"
@@ -81,9 +84,10 @@ class Knight(Piece):
 		...
 
 class Rook(Piece):
-	def __init__(self, color: str):
+	def __init__(self, color: str, id: int):
 		super().__init__()
 		self.color: str = color
+		self.id = id
 		self.type: str = 'rook'
 		self.position: tuple[int, int]
 		self.image: str = f"{PATH_IMG_FOLDER}/{color}_rook.png"
@@ -95,9 +99,10 @@ class Rook(Piece):
 		...
 
 class Pawn(Piece):
-	def __init__(self, color: str):
+	def __init__(self, color: str, id: int):
 		super().__init__()
 		self.color: str = color
+		self.id = id
 		self.type: str = 'pawn'
 		self.position: tuple[int, int]
 		self.image: str = f"{PATH_IMG_FOLDER}/{color}_pawn.png"
