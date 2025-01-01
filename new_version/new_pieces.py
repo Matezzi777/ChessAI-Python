@@ -5,34 +5,48 @@ PATH_IMG_FOLDER: str = "./pieces"
 class Piece:
 	def __init__(self):
 		self.color: str
+		self.id: int
 		self.type: str
 		self.image: str
-		self.position: tuple[int, int]
 
 	def is_allied(self, piece):
-		return (self.color == piece.color)
-	
+		if (piece):
+			return (self.color == piece.color)
+		return (False)
+
 	def is_enemy(self, piece):
-		return (self.color != piece.color)
-	
-	def get_valid_moves(self) -> list[tuple[int, int]]:
+		if (piece):
+			return (self.color != piece.color)
+		return (False)
+
+	def get_valid_moves(self, board: list[list]) -> list[tuple[int, int]]:
 		...
 
 	def display_valid_moves(self) -> None:
 		...
 
-	def get_position(self) -> tuple[int, int]:
-		...
+	def get_position(self, board: list[list]) -> tuple[int, int]:
+		row: int = 0
+		while (row < 8):
+			col: int = 0
+			while (col < 8):
+				piece: Piece | None = board[row][col]
+				if piece:
+					if piece.color == self.color and piece.type == self.type and piece.id == self.id:
+						return ((row,col))
+				col += 1
+			row += 1
 
 class King(Piece):
-	def __init__(self, color: str):
+	def __init__(self, color: str, id: int):
 		super().__init__()
 		self.color: str = color
+		self.id = id
 		self.type: str = 'king'
 		self.position: tuple[int, int]
 		self.image: str = f"{PATH_IMG_FOLDER}/{color}_king.png"
 
-	def get_valid_moves(self) -> list[tuple[int, int]]:
+	def get_valid_moves(self, board) -> list[tuple[int, int]]:
 		...
 
 	def display_valid_moves(self) -> None:

@@ -1,5 +1,5 @@
 import pygame
-from pieces import Piece, King, Queen, Bishop, Knight, Rook, Pawn
+from new_pieces import Piece, King, Queen, Bishop, Knight, Rook, Pawn
 
 #COLORS
 BACKGROUND_COLOR = (48, 46, 43)
@@ -34,5 +34,5 @@ def put_piece(window, piece: Piece, position: tuple[int, int]) -> None:
 	piece_image.convert()
 	window.blit(piece_image, (position[1]*100+50, position[0]*100+50))
 
-def put_valid_moves(window, position: tuple[int, int]) -> None:
+def put_valid_move(window, position: tuple[int, int]) -> None:
 	...
