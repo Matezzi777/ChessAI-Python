@@ -1,18 +1,227 @@
+from pieces import Move
+
 #Mouvements légaux de Pion
-def get_pawn_valid_moves(board, piece_selected, x, y) -> list[tuple[int, int]] | None:
-	...
+def get_pawn_valid_moves(board, piece_selected, x: int, y: int, last_move: Move) -> list[tuple[int, int]] | None:
+	if (piece_selected == 'p'):
+		allied_piece = ['k', 'q', 'b', 'n', 'r', 'p']
+		enemy_pieces = ['K', 'Q', 'B', 'N', 'R', 'P']
+	elif (piece_selected == 'P'):
+		allied_piece = ['K', 'Q', 'B', 'N', 'R', 'P']
+		enemy_pieces = ['k', 'q', 'b', 'n', 'r', 'p']
+	else:
+		print("ERROR : Piece selected was supposed to be a pawn but is not.")
+
+	potential_moves: list[tuple[int, int]] = []
+	if (piece_selected == 'p'):
+		print(f"Tests :\n - x = {x} | y == 4 (y == {y})\n - last_move.piece == 'P' (last_move.piece == '{last_move.piece}')\n - last_move.start[1] == 6 (last_move.start[1] == {last_move.start[1]})\n - last_move.end[1] == 4 (last_move.end[1] == {last_move.end[1]})")
+		print(f" - last_move.start[0] == x-1 or last_move.start[0] == x+1 (last_move.start[0] == {last_move.start[0]})")
+		if (last_move != None):
+			if ((y == 4) and (last_move.piece == 'P') and (last_move.start[1] == 6) and (last_move.end[1] == 4) and (last_move.start[0] == x-1 or last_move.start[0] == x+1)):
+				if (last_move.start[0] == x+1):
+					potential_moves.append((y+1,x+1))
+				elif (last_move.start[1] == x-1):
+					potential_moves.append((y+1,x-1))
+		if (not board[y+1][x] in enemy_pieces):
+			potential_moves.append((x,y+1))
+			if (y == 1 and (not board[y+2][x] in enemy_pieces)):
+				potential_moves.append((x,y+2))
+		if ((not x == 0) and (board[y+1][x-1] in enemy_pieces)):
+			potential_moves.append((x-1,y+1))
+		if ((not x == 7) and (board[y+1][x+1] in enemy_pieces)):
+			potential_moves.append((x+1,y+1))
+
+	if (piece_selected == 'P'):
+		if (last_move != None):
+			if ((y == 3) and (last_move.piece == 'p') and (last_move.start[0] == 1) and (last_move.end[0] == 3) and (((x > 0) and (last_move.start[1] == x-1)) or last_move.start[1] == x+1)):
+				potential_moves.append((y+1,last_move.start[1]))
+		if (not board[y-1][x] in enemy_pieces):
+			potential_moves.append((x,y-1))
+			if (y == 6 and (not board[y-2][x] in enemy_pieces)):
+				potential_moves.append((x,y-2))
+		if ((not x == 0) and (board[y-1][x-1] in enemy_pieces)):
+			potential_moves.append((x-1,y-1))
+		if ((not x == 7) and (board[y-1][x+1] in enemy_pieces)):
+			potential_moves.append((x+1,y-1))
+	
+	valid_moves: list[tuple[int, int]] = []
+	for move in potential_moves:
+		if ((is_on_board(move)) and (not is_on_allied_piece(board, move, allied_piece)) and (not discover_allied_king(board, (x,y), move))):
+			valid_moves.append(move)
+	if (valid_moves):
+		return (valid_moves)
+	return (None)
 
 #Mouvements légaux de Roi
 def get_king_valid_moves(board, piece_selected, x, y) -> list[tuple[int, int]] | None:
-	...
+	if (piece_selected == 'k'):
+		allied_pieces = ['q', 'b', 'n', 'r', 'p']
+	elif (piece_selected == 'K'):
+		allied_pieces = ['Q', 'B', 'N', 'R', 'P']
+	else:
+		print(f"ERROR : Piece selected was supposed to be a king but is not.")
+
+	potential_moves: list[tuple[int, int]] = [
+		(x-1, y-1),
+		(x, y-1),
+		(x+1, y-1),
+		(x-1, y),
+		(x+1, y),
+		(x-1, y+1),
+		(x, y+1),
+		(x+1, y+1)]
+
+	valid_moves : list[tuple[int, int]] = []
+
+	for move in potential_moves:
+		if ((is_on_board(move)) and (not is_on_allied_piece(board, move, allied_pieces)) and (not discover_allied_king(board, (x,y), move))):
+			valid_moves.append(move)
+	
+	if (valid_moves):
+		return (valid_moves)
+	else:
+		return (None)
 
 #Mouvements légaux de Dame
 def get_queen_valid_moves(board, piece_selected, x, y) -> list[tuple[int, int]] | None:
-	...
+	if (piece_selected == 'q'):
+		allied_pieces = ['k', 'q', 'b', 'n', 'r', 'p']
+		enemy_pieces = ['K', 'Q', 'B', 'N', 'R', 'P']
+	elif (piece_selected == 'Q'):
+		allied_pieces = ['K', 'Q', 'B', 'N', 'R', 'P']
+		enemy_pieces = ['k', 'q', 'b', 'n', 'r', 'p']
+	else:
+		print("ERROR : Piece selected was supposed to be a queen but is not.")
+		return (None)
+	
+	potential_moves: list[tuple[int, int]] = []
+
+	temp_x = x
+	temp_y = y
+	while(is_on_board((temp_x+1, temp_y+1)) and (not is_on_allied_piece(board, (temp_x+1, temp_y+1), allied_pieces))):
+		temp_x+=1
+		temp_y+=1
+		potential_moves.append((temp_x,temp_y))
+		if(board[temp_y][temp_x] in enemy_pieces):
+			break
+	temp_x = x
+	temp_y = y
+	while(is_on_board((temp_x-1, temp_y-1)) and (not is_on_allied_piece(board, (temp_x-1, temp_y-1), allied_pieces))):
+		temp_x-=1
+		temp_y-=1
+		potential_moves.append((temp_x,temp_y))
+		if(board[temp_y][temp_x] in enemy_pieces):
+			break
+	temp_x = x
+	temp_y = y
+	while(is_on_board((temp_x-1, temp_y+1)) and (not is_on_allied_piece(board, (temp_x-1, temp_y+1), allied_pieces))):
+		temp_x-=1
+		temp_y+=1
+		potential_moves.append((temp_x,temp_y))
+		if(board[temp_y][temp_x] in enemy_pieces):
+			break
+	temp_x = x
+	temp_y = y
+	while(is_on_board((temp_x+1, temp_y-1)) and (not is_on_allied_piece(board, (temp_x+1, temp_y-1), allied_pieces))):
+		temp_x+=1
+		temp_y-=1
+		potential_moves.append((temp_x,temp_y))
+		if(board[temp_y][temp_x] in enemy_pieces):
+			break
+	temp_x = x
+	temp_y = y
+	while(is_on_board((temp_x, temp_y+1)) and (not is_on_allied_piece(board, (temp_x, temp_y+1), allied_pieces))):
+		temp_y+=1
+		potential_moves.append((temp_x,temp_y))
+		if(board[temp_y][temp_x] in enemy_pieces):
+			break
+	temp_x = x
+	temp_y = y
+	while(is_on_board((temp_x, temp_y-1)) and (not is_on_allied_piece(board, (temp_x, temp_y-1), allied_pieces))):
+		temp_y-=1
+		potential_moves.append((temp_x,temp_y))
+		if(board[temp_y][temp_x] in enemy_pieces):
+			break
+	temp_x = x
+	temp_y = y
+	while(is_on_board((temp_x+1, temp_y)) and (not is_on_allied_piece(board, (temp_x+1, temp_y), allied_pieces))):
+		temp_x+=1
+		potential_moves.append((temp_x,temp_y))
+		if(board[temp_y][temp_x] in enemy_pieces):
+			break
+	temp_x = x
+	temp_y = y
+	while(is_on_board((temp_x-1, temp_y)) and (not is_on_allied_piece(board, (temp_x-1, temp_y), allied_pieces))):
+		temp_x-=1
+		potential_moves.append((temp_x,temp_y))
+		if(board[temp_y][temp_x] in enemy_pieces):
+			break
+
+	valid_moves: list[tuple[int, int]] = []
+
+	for move in potential_moves:
+		if (is_on_board(move) and (not is_on_allied_piece(board, move, allied_pieces)) and (not discover_allied_king(board, (x,y), move))):
+			valid_moves.append(move)
+
+	if (valid_moves):
+		return (valid_moves)
+	return (None)
 
 #Mouvements légaux de Fou
 def get_bishop_valid_moves(board, piece_selected, x, y) -> list[tuple[int, int]] | None:
-	...
+	if (piece_selected == 'b'):
+		allied_pieces = ['k', 'q', 'b', 'n', 'r', 'p']
+		enemy_pieces = ['K', 'Q', 'B', 'N', 'R', 'P']
+	elif (piece_selected == 'B'):
+		allied_pieces = ['K', 'Q', 'B', 'N', 'R', 'P']
+		enemy_pieces = ['k', 'q', 'b', 'n', 'r', 'p']
+	else:
+		print("ERROR : Piece selected was supposed to be a bishop but is not.")
+		return (None)
+	
+	potential_moves: list[tuple[int, int]] = []
+	
+	temp_x = x
+	temp_y = y
+	while (is_on_board((temp_x+1,temp_y+1)) and (not is_on_allied_piece(board, (temp_x+1,temp_y+1), allied_pieces))):
+		temp_x+=1
+		temp_y+=1
+		potential_moves.append((temp_x,temp_y))
+		if (board[temp_y][temp_x] in enemy_pieces):
+			break
+	temp_x = x
+	temp_y = y
+	while (is_on_board((temp_x-1,temp_y-1)) and (not is_on_allied_piece(board, (temp_x-1,temp_y-1), allied_pieces))):
+		temp_x-=1
+		temp_y-=1
+		potential_moves.append((temp_x,temp_y))
+		if (board[temp_y][temp_x] in enemy_pieces):
+			break
+	temp_x = x
+	temp_y = y
+	while (is_on_board((temp_x+1,temp_y-1)) and (not is_on_allied_piece(board, (temp_x+1,temp_y-1), allied_pieces))):
+		temp_x+=1
+		temp_y-=1
+		potential_moves.append((temp_x,temp_y))
+		if (board[temp_y][temp_x] in enemy_pieces):
+			break
+	temp_x = x
+	temp_y = y
+	while (is_on_board((temp_x-1,temp_y+1)) and (not is_on_allied_piece(board, (temp_x-1,temp_y+1), allied_pieces))):
+		temp_x-=1
+		temp_y+=1
+		potential_moves.append((temp_x,temp_y))
+		if (board[temp_y][temp_x] in enemy_pieces):
+			break
+
+	valid_moves: list[tuple[int, int]] = []
+
+	for move in potential_moves:
+		if (is_on_board(move) and (not is_on_allied_piece(board, move, allied_pieces)) and (not discover_allied_king(board, (x,y), move))):
+			valid_moves.append(move)
+
+	if (valid_moves):
+		return (valid_moves)
+	return (None)
 
 #Mouvements légaux de Cavalier
 def get_knight_valid_moves(board, piece_selected, x, y) -> list[tuple[int, int]] | None:
@@ -48,7 +257,53 @@ def get_knight_valid_moves(board, piece_selected, x, y) -> list[tuple[int, int]]
 
 #Mouvements légaux de Tour
 def get_rook_valid_moves(board, piece_selected, x, y) -> list[tuple[int, int]] | None:
-	...
+	if (piece_selected == 'r'):
+		allied_pieces = ['k', 'q', 'b', 'n', 'r', 'p']
+		enemy_pieces = ['K', 'Q', 'B', 'N', 'R', 'P']
+	elif (piece_selected == 'R'):
+		allied_pieces = ['K', 'Q', 'B', 'N', 'R', 'P']
+		enemy_pieces = ['k', 'q', 'b', 'n', 'r', 'p']
+	else:
+		print("ERROR : Piece selected was supposed to be a rook but is not.")
+		return (None)
+	
+	potential_moves: list[tuple[int, int]] = []
+	
+	temp_x = x
+	temp_y = y
+	while (is_on_board((temp_x+1,temp_y)) and (not is_on_allied_piece(board, (temp_x+1,temp_y), allied_pieces))):
+		temp_x+=1
+		potential_moves.append((temp_x,temp_y))
+		if (board[temp_y][temp_x] in enemy_pieces):
+			break
+	temp_x = x
+	while (is_on_board((temp_x-1,temp_y)) and (not is_on_allied_piece(board, (temp_x-1,temp_y), allied_pieces))):
+		temp_x-=1
+		potential_moves.append((temp_x,temp_y))
+		if (board[temp_y][temp_x] in enemy_pieces):
+			break
+	temp_x = x
+	while (is_on_board((temp_x,temp_y-1)) and (not is_on_allied_piece(board, (temp_x,temp_y-1), allied_pieces))):
+		temp_y-=1
+		potential_moves.append((temp_x,temp_y))
+		if (board[temp_y][temp_x] in enemy_pieces):
+			break
+	temp_y = y
+	while (is_on_board((temp_x,temp_y+1)) and (not is_on_allied_piece(board, (temp_x,temp_y+1), allied_pieces))):
+		temp_y+=1
+		potential_moves.append((temp_x,temp_y))
+		if (board[temp_y][temp_x] in enemy_pieces):
+			break
+
+	valid_moves: list[tuple[int, int]] = []
+
+	for move in potential_moves:
+		if (is_on_board(move) and (not is_on_allied_piece(board, move, allied_pieces)) and (not discover_allied_king(board, (x,y), move))):
+			valid_moves.append(move)
+
+	if (valid_moves):
+		return (valid_moves)
+	return (None)
 
 ################################################ Conditions ################################################
 #Vérifie si les coordonnées sont sur le plateau

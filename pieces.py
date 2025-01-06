@@ -13,6 +13,17 @@ black_knight = pygame.image.load('pieces/black_horse.png')
 black_rook = pygame.image.load('pieces/black_rook.png')
 black_pawn = pygame.image.load('pieces/black_pawn.png')
 
+class Move:
+	def __init__(self, piece: str, start: tuple[int, int], end: tuple[int, int], piece_captured: str):
+		self.piece: str = piece
+		self.start: tuple[int, int] = start
+		self.end: tuple[int, int] = end
+		self.piece_captured: str = piece_captured
+
+	def undo(self, board: list[list[str]]) -> None:
+		board[self.start[1]][self.start[0]] = self.piece
+		board[self.end[1]][self.end[0]] = self.piece_captured
+
 PIECES: list = [
     white_king,
     white_queen,

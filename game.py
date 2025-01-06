@@ -1,7 +1,7 @@
 import pygame
 from board import *
 from graphics import *
-from pieces import PIECES
+from pieces import PIECES, Move
 from moves import *
 
 # Définition de constantes
@@ -18,6 +18,7 @@ class Game:
         self.turn: int = 1                                                  #Le compteur de tour pour savoir si c'est au tour des Noirs ou des Blancs
         self.piece_selected: tuple[int, int] | None = None                  #Un tuple représentant la position de la pièce sélectionnée s'il y en a une. Vaut None si aucune pièce n'est sélectionnée
         self.valid_moves: list[tuple[int, int]] | None = None               #La liste des tuples représentant les coups légaux de la pièce sélectionnée s'il y en a une. Vaut None si aucune pièce n'est sélectionnée
+        self.last_move: Move | None = None
 
     def handling_events(self):
         for event in pygame.event.get():
@@ -40,9 +41,10 @@ class Game:
                             #Si le clic est sur une autre pièce de la bonne couleur
                             if (clicked_on_allied_piece(self.board, event.pos, self.turn)):
                                 self.piece_selected = (clickx_to_boardx(event.pos[0]),clicky_to_boardy(event.pos[1]))
-                                self.valid_moves = get_valid_moves(self.board, self.piece_selected)
+                                self.valid_moves = get_valid_moves(self.board, self.piece_selected, self.last_move)
                             #Si le coup est légal
                             elif (self.valid_moves and (clickx_to_boardx(event.pos[0]), clicky_to_boardy(event.pos[1])) in self.valid_moves):
+                                self.last_move = Move(self.board[self.piece_selected[0]][self.piece_selected[1]], self.piece_selected, (clickx_to_boardx(event.pos[0]), clicky_to_boardy(event.pos[1])), self.board[clicky_to_boardy(event.pos[1])][clickx_to_boardx(event.pos[0])])
                                 make_move(self.board, self.piece_selected, (clickx_to_boardx(event.pos[0]), clicky_to_boardy(event.pos[1])))
                                 self.piece_selected = None
                                 self.valid_moves = None
@@ -56,7 +58,7 @@ class Game:
                             #Clic sur une pièce de la bonne couleur
                             if (clicked_on_allied_piece(self.board, event.pos, self.turn)):
                                 self.piece_selected = (clickx_to_boardx(event.pos[0]),clicky_to_boardy(event.pos[1]))
-                                self.valid_moves = get_valid_moves(self.board, self.piece_selected)
+                                self.valid_moves = get_valid_moves(self.board, self.piece_selected, self.last_move)
                     #Clic droit
                     elif (event.button == RIGHT_CLICK):
                         if (self.piece_selected):
@@ -107,12 +109,12 @@ def make_move(board, origin: tuple[int, int], target: tuple[int, int]) -> None:
 
 
 #Retourne la liste des mouvements légaux pour la pièce sélectionnée
-def get_valid_moves(board, piece_position: tuple[int, int]) -> list[tuple[int, int]] | None:
+def get_valid_moves(board, piece_position: tuple[int, int], last_move: Move) -> list[tuple[int, int]] | None:
     valid_moves: list[tuple[int, int]] = []
     piece_selected = board[piece_position[1]][piece_position[0]]
     print(f"Piece selected : '{piece_selected}'.")
     if (piece_selected == 'P' or piece_selected == 'p'):
-        valid_moves = get_pawn_valid_moves(board, piece_selected, piece_position[0], piece_position[1])
+        valid_moves = get_pawn_valid_moves(board, piece_selected, piece_position[0], piece_position[1], last_move)
     elif (piece_selected == 'K' or piece_selected == 'k'):
         valid_moves = get_king_valid_moves(board, piece_selected, piece_position[0], piece_position[1])
     elif (piece_selected == 'Q' or piece_selected == 'q'):
