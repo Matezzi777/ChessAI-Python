@@ -208,15 +208,15 @@ def put_pieces(screen, board, pieces) -> None:
             j += 1
         i += 1
 
-def put_pieces2(screen, board) -> None:
-    i: int = 0
-    while i < 8:
-        j: int = 0
-        while j < 8:
-            if (board[i][j]):
-                place_piece(screen, pygame.image.load(board[i][j].image), i, j)
-            j += 1
-        i += 1
+# def put_pieces2(screen, board) -> None:
+#     i: int = 0
+#     while i < 8:
+#         j: int = 0
+#         while j < 8:
+#             if (board[i][j]):
+#                 place_piece(screen, pygame.image.load(board[i][j].image), i, j)
+#             j += 1
+#         i += 1
 
 def place_piece(screen, piece, x: int, y: int) -> None:
     piece.convert()

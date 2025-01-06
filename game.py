@@ -14,8 +14,8 @@ class Game:
         self.letter_font = letter_font                                      #La police de caractère des chiffres et lettres des lignes et colonnes
         self.running: bool = True                                           #La variable permettant d'arrêter la boucle de jeu
         self.clock = pygame.time.Clock()                                    #Un genre de métronome permettant de lisser les performance entre les différents ordinateurs à 60fps
-        # self.board = init_board()                                           #Un tableau de caractères représentant le plateau
-        self.board = init_board2()                                           #Un tableau de caractères représentant le plateau
+        self.board = init_board()                                           #Un tableau de caractères représentant le plateau
+        # self.board = init_board2()                                          #Un tableau de caractères représentant le plateau
         self.turn: int = 1                                                  #Le compteur de tour pour savoir si c'est au tour des Noirs ou des Blancs
         self.piece_selected: tuple[int, int] | None = None                  #Un tuple représentant la position de la pièce sélectionnée s'il y en a une. Vaut None si aucune pièce n'est sélectionnée
         self.valid_moves: list[tuple[int, int]] | None = None               #La liste des tuples représentant les coups légaux de la pièce sélectionnée s'il y en a une. Vaut None si aucune pièce n'est sélectionnée
@@ -79,8 +79,8 @@ class Game:
         if (self.piece and self.valid_moves):
             for move in self.valid_moves:
                 place_valid_move(self.screen, move[0], move[1])
-        # put_pieces(self.screen, self.board, PIECES)
-        put_pieces2(self.screen, self.board)
+        put_pieces(self.screen, self.board, PIECES)
+        # put_pieces2(self.screen, self.board)
         pygame.display.flip()
 
     def run(self):
@@ -178,15 +178,19 @@ def clicky_to_boardy(posy: int) -> int:
 #Retourne True si le clic se situe sur une pièce de la couleur du joueur dont c'est le tour sinon renvoie False
 def clicked_on_allied_piece(board, position: tuple[int, int], tour: int) -> bool:
     if (tour % 2 == 0):
-        color = 'black'
+        allied_pieces = ['k', 'q', 'b', 'n', 'r', 'p']
+        # color = 'black'
     else:
-        color = 'white'
+        allied_pieces = ['K', 'Q', 'B', 'N', 'R', 'P']
+        # color = 'white'
 
     x = clickx_to_boardx(position[0])
     y = clicky_to_boardy(position[1])
 
-    if (board[y][x] == None):
-        return (False)
-    if (board[y][x].color == color):
+    # if (board[y][x] == None):
+    if (board[y][x] in allied_pieces):
         return (True)
-    return (False)
+    else:
+    # if (board[y][x].color == color):
+        return (False)
+    # return (False)
