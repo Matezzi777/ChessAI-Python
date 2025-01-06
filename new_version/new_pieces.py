@@ -1,4 +1,5 @@
 import pygame
+from new_board import Board, Coup
 
 PATH_IMG_FOLDER: str = "./pieces"
 
@@ -91,11 +92,24 @@ class Knight(Piece):
 		self.position: tuple[int, int]
 		self.image: str = f"{PATH_IMG_FOLDER}/{color}_knight.png"
 
-	def get_valid_moves(self) -> list[tuple[int, int]]:
-		...
-
-	def display_valid_moves(self) -> None:
-		...
+	def get_valid_moves(self, board: Board, position: tuple[int, int]) -> list[tuple[int, int]] | None:
+		col = position[1]
+		row = position[0]
+		potential_moves: list[Coup] = [
+			Coup(self, (row+1, col+2)),
+			Coup(self, (row+1, col-2)),
+			Coup(self, (row+2, col+1)),
+			Coup(self, (row+2, col-1)),
+			Coup(self, (row-1, col+2)),
+			Coup(self, (row-1, col-2)),
+			Coup(self, (row-2, col+1)),
+			Coup(self, (row-2, col-1))
+		]
+		valid_moves: list[Coup] | None = []
+		for move in potential_moves:
+			if (is_valid(move)):
+				valid_moves.append(move)
+		return (valid_moves)
 
 class Rook(Piece):
 	def __init__(self, color: str, id: int):
@@ -126,3 +140,8 @@ class Pawn(Piece):
 
 	def display_valid_moves(self) -> None:
 		...
+
+#Common Functions
+
+def is_valid(move: Coup, board: Board) -> bool:
+	...

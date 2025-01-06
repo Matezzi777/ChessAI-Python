@@ -2,8 +2,9 @@ from new_pieces import Piece, King, Queen, Bishop, Knight, Rook, Pawn
 from new_graphics import put_background, put_piece
 
 class Coup:
-	def __init__(self, piece: Piece, target: tuple[int, int]):
+	def __init__(self, piece: Piece, origin: tuple[int, int], target: tuple[int, int]):
 		self.piece = piece
+		self.origin = origin
 		self.target = target
 
 	def display(self, window):

@@ -21,7 +21,9 @@ class Game:
 			if event.type == pygame.QUIT:
 				self.running = False
 			if event.type == pygame.KEYDOWN:
-				...
+				if event.key == pygame.K_SPACE:				#Si la touche SPACE est pressée
+					self.piece_selected = None
+					self.valid_moves = None
 			if (event.type == pygame.MOUSEBUTTONDOWN):
 				position = event.pos
 				button = event.button
@@ -31,17 +33,17 @@ class Game:
 						if (self.piece_selected == None):													#Si aucune pièce n'est déjà sélectionnée
 							if (clicked_on_allied_piece(board_pos, self.board, self.turn)):						#Si clic sur une pièce alliée
 								self.piece_selected = self.board[board_pos[0]][board_pos[1]]
-								self.valid_moves = self.piece_selected.get_valid_moves(self.board)
-								for move in self.valid_moves:
-									move.display(self.window)
+								self.piece_selected.display_valid_moves(self.window, self.board, board_pos)
 						else:																				#Si une pièce était déjà sélectionnée
 							if (board_pos in self.valid_moves):							#Si le click est sur un mouvement valide
 								move = Coup()
 								self.board.make_move(move)
 					elif (button == RIGHT_CLICK):														#Si c'est un clic droit
 						self.piece_selected = None
+						self.valid_moves = None
 				else:																				#Si le clic est en dehors de l'échiquier
 					self.piece_selected = None
+					self.valid_moves = None
 
 	def display(self):
 		self.board.display()
