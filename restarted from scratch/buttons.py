@@ -9,18 +9,18 @@ class Button:
 			  font,
 			  base_color,
 			  hovering_color):
-		self.image = image
-		self.x_pos = position[0]
-		self.y_pos = position[1]
+		self.image: pygame.Surface = image
+		self.x_pos: int = position[0]
+		self.y_pos: int = position[1]
 		self.font = font
-		self.base_color = base_color
-		self.hovering_color = hovering_color
-		self.text_input = text_input
-		self.text = self.font.render(self.text_input, True, self.base_color)
+		self.base_color: tuple[int, int, int] = base_color
+		self.hovering_color: tuple[int, int, int] = hovering_color
+		self.text_input: str = text_input
+		self.text: pygame.Surface = self.font.render(self.text_input, True, self.base_color)
 		if self.image is None:
 			self.image = self.text
-		self.rect = self.image.get_rect(center=(self.x_pos, self.y_pos))
-		self.text_rect = self.text.get_rect(center=(self.x_pos, self.y_pos))
+		self.rect: pygame.Rect = self.image.get_rect(center=(self.x_pos, self.y_pos))
+		self.text_rect: pygame.Rect = self.text.get_rect(center=(self.x_pos, self.y_pos))
 
 	def update(self, screen):
 		if (self.image is not None):
