@@ -1,14 +1,12 @@
 import pygame
-from game import Game
 from menu import Menu
 
 pygame.mixer.pre_init(44100, -16, 2, 2048)
 pygame.init()
-screen = pygame.display.set_mode((900, 900))
-pygame.display.set_caption('ChessAI 3.0')
-police = pygame.font.SysFont('Arial', 24)
+screen: pygame.Surface = pygame.display.set_mode((900, 900))
+pygame.display.set_caption('ChessAI 2.0')
 
-menu = Menu(screen, police)
+menu = Menu(screen)
 
 menu.run()
 pygame.quit()

@@ -2,7 +2,7 @@ import pygame
 import sys
 import buttons
 
-class Game:
+class Options:
 	def __init__(self, screen):
 		self.running: bool = True
 		self.screen: pygame.Surface = screen
@@ -15,7 +15,7 @@ class Game:
 			button.update(mouse_position)
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
-				print("GAME : Window cross clicked")
+				print("OPTIONS : Window cross clicked")
 				pygame.quit()
 				sys.exit()
 			if event.type == pygame.MOUSEBUTTONDOWN:
@@ -24,7 +24,7 @@ class Game:
 				...
 
 	def display(self):
-		self.screen.fill((255, 0, 0))
+		self.screen.fill((0, 0, 255))
 		pygame.display.flip()
 
 	def run(self):
