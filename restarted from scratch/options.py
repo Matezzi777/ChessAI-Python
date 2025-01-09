@@ -20,8 +20,6 @@ class Options:
 				sys.exit()
 			if event.type == pygame.MOUSEBUTTONDOWN:
 				...
-			if event.type == pygame.KEYDOWN:
-				...
 
 	def display(self):
 		self.screen.fill((0, 0, 255))

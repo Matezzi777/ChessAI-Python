@@ -1,12 +1,21 @@
 import pygame
 import sys
 import buttons
+import game_objects
 
 class Game:
 	def __init__(self, screen):
+		#Tech Variables
 		self.running: bool = True
 		self.screen: pygame.Surface = screen
+		self.clock = pygame.time.Clock()
+		#Game Variables
 		self.buttons: list[buttons.Button] = []
+		self.board: game_objects.Board = game_objects.Board()
+		self.tile_selected: game_objects.Case | None = None
+		self.valid_moves: list[game_objects.Move] | None = None
+		self.last_move: game_objects.Move | None = None
+		self.turn: int = 1
 
 	def handle_events(self):
 		mouse_position = pygame.mouse.get_pos()
@@ -24,7 +33,7 @@ class Game:
 				...
 
 	def display(self):
-		self.screen.fill((255, 0, 0))
+		self.board.display(self.screen)
 		pygame.display.flip()
 
 	def run(self):
