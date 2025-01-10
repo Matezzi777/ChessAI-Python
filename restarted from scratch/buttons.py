@@ -2,6 +2,7 @@ import pygame
 import sys
 from game import Game
 from options import Options
+from constants import BUTTON_BACKGROUND_COLOR
 
 #GENERIC BUTTON CLASS
 class Button:
@@ -98,3 +99,54 @@ class ButtonColorChoice(Button):
 				   hovering_color = ())
 
 #GAME
+class ButtonGetBetterMove(Button):
+	def __init__(self, position: tuple[int, int], base_color: tuple[int, int, int], hover_color: tuple[int, int, int]):
+		super().__init__(image=None,
+				   position=position,
+				   text_input="GET BETTER MOVE",
+				   font = pygame.font.SysFont("Arial", 35),
+				   base_color = base_color,
+				   hovering_color = hover_color)
+
+	def callback(self, screen):
+		print("GAME : GET BETTER MOVE pressed")
+		...
+
+class ButtonAnalyzePosition(Button):
+	def __init__(self, position: tuple[int, int], base_color: tuple[int, int, int], hover_color: tuple[int, int, int]):
+		super().__init__(image=None,
+				   position=position,
+				   text_input="ANALYZE POSITION",
+				   font = pygame.font.SysFont("Arial", 35),
+				   base_color = base_color,
+				   hovering_color = hover_color)
+
+	def callback(self, screen):
+		print("GAME : ANALYZE POSITION pressed")
+		...
+
+class ButtonTurnBoard(Button):
+	def __init__(self, position: tuple[int, int], base_color: tuple[int, int, int], hover_color: tuple[int, int, int]):
+		super().__init__(image=None,
+				   position=position,
+				   text_input="TURN BOARD",
+				   font = pygame.font.SysFont("Arial", 35),
+				   base_color = base_color,
+				   hovering_color = hover_color)
+
+	def callback(self, screen):
+		print("GAME : TURN BOARD pressed")
+		...
+
+class ButtonResign(Button):
+	def __init__(self, position: tuple[int, int], base_color: tuple[int, int, int], hover_color: tuple[int, int, int]):
+		super().__init__(image=None,
+				   position=position,
+				   text_input="RESIGN",
+				   font = pygame.font.SysFont("Arial", 35),
+				   base_color = base_color,
+				   hovering_color = hover_color)
+
+	def callback(self, screen):
+		print("GAME : RESIGN pressed")
+		...

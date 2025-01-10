@@ -15,7 +15,7 @@ class Options:
 			button.update(mouse_position)
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
-				print("OPTIONS : Window cross clicked")
+				print("OPTIONS : Close Window clicked")
 				pygame.quit()
 				sys.exit()
 			if event.type == pygame.MOUSEBUTTONDOWN:
