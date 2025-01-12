@@ -23,22 +23,27 @@ class Game:
 		self.last_move: game_objects.Move | None = None
 		self.turn: int = 1
 
-	def handle_events(self):
+	def update(self):
 		mouse_position = pygame.mouse.get_pos()
-		for button in self.buttons:
+		for button in self.buttons:						#HOVER BUTTONS
 			button.change_color(mouse_position)
 			button.update(self.screen)
+
+	def handle_events(self):
+		mouse_position = pygame.mouse.get_pos()
 		for event in pygame.event.get():
-			if event.type == pygame.QUIT:
+			if event.type == pygame.QUIT:				#CROIX CLOSE
 				print("GAME : Close Window clicked")
 				pygame.quit()
 				sys.exit()
-			if event.type == pygame.MOUSEBUTTONDOWN:
+			if event.type == pygame.MOUSEBUTTONDOWN:	#GESTION DES CLICS
 				for button in self.buttons:
 					if (button.check_for_input(mouse_position)):
 						button.callback(self.screen)
-			if event.type == pygame.KEYDOWN:
-				...
+			if event.type == pygame.KEYDOWN:			#APPUIS DE TOUCHES
+				if event.key == pygame.K_SPACE:
+					self.tile_selected = None
+					self.valid_moves = None
 
 	def display(self):
 		self.board.display(self.screen)
@@ -48,5 +53,6 @@ class Game:
 
 	def run(self):
 		while (self.running):
+			self.update()
 			self.handle_events()
 			self.display()
