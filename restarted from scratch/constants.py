@@ -3,6 +3,8 @@ import pygame
 #GLOBAL
 SCREEN_HEIGHT: int = 900
 SCREEN_WIDTH: int = 1350
+LEFT_CLIC: int = 1
+RIGHT_CLIC: int = 3
 
 #MENU
 MAIN_MENU_BACKGROUND_COLOR = (48, 46, 43)

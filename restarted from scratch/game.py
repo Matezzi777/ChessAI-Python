@@ -2,7 +2,7 @@ import pygame
 import sys
 import buttons
 import game_objects
-from constants import GAME_LETTERS_COLOR, GAME_BUTTONS_IDLE_COLOR, GAME_BUTTONS_HOVER_COLOR
+from constants import GAME_LETTERS_COLOR, GAME_BUTTONS_IDLE_COLOR, GAME_BUTTONS_HOVER_COLOR, LEFT_CLIC, RIGHT_CLIC
 
 class Game:
 	def __init__(self, screen):
@@ -37,9 +37,24 @@ class Game:
 				pygame.quit()
 				sys.exit()
 			if event.type == pygame.MOUSEBUTTONDOWN:	#GESTION DES CLICS
-				for button in self.buttons:
-					if (button.check_for_input(mouse_position)):
-						button.callback(self.screen)
+				if event.button == LEFT_CLIC:				#CLIC GAUCHE
+					for button in self.buttons:
+						if (button.check_for_input(mouse_position)):
+							button.callback(self.screen)
+					if (is_on_board(mouse_position)):
+						if (self.tile_selected == None):
+							self.tile_selected: game_objects.Case = get_tile_selected(mouse_position, self.board)
+							if (self.tile_selected is not None):
+								piece_selected: game_objects.Piece = self.tile_selected.piece
+								self.valid_moves = piece_selected.get_valid_moves(self.board)
+						else:
+							proposed_move = game_objects.Move(self.tile_selected.piece, self.tile_selected.position, get_target_position(mouse_position))
+							if (proposed_move in self.valid_moves):
+								proposed_move.play(self.board)
+				if event.button == RIGHT_CLIC:				#CLIC DROIT
+					if (is_on_board(mouse_position)):
+						self.tile_selected = None
+						self.valid_moves = None
 			if event.type == pygame.KEYDOWN:			#APPUIS DE TOUCHES
 				if event.key == pygame.K_SPACE:
 					self.tile_selected = None
@@ -49,6 +64,9 @@ class Game:
 		self.board.display(self.screen)
 		for button in self.buttons:
 			button.update(self.screen)
+		if (self.valid_moves is not None):
+			for move in self.valid_moves:
+				move.display(self.screen)
 		pygame.display.flip()
 
 	def run(self):
@@ -56,3 +74,95 @@ class Game:
 			self.update()
 			self.handle_events()
 			self.display()
+
+#Fonctions
+
+#Retourne True si le clic est sur le board, sinon False
+def is_on_board(position: tuple[int, int]) -> bool:
+	x = position[0]
+	y = position[1]
+	if ((50 < x < 850) and (50 < y < 850) and (not(x in [150,250,350,450,550,650,750])) and (not(y in [150,250,350,450,550,650,750]))):
+		return (True)
+	return (False)
+
+def get_tile_selected(position: tuple[int, int], board: game_objects.Board) -> game_objects.Case:
+	x : int = position[0]
+	y : int = position[1]
+	#Translate x to board_x
+	if (50 < x < 150):
+		board_x : int = 0
+	elif (150 < x < 250):
+		board_x : int = 1
+	elif (250 < x < 350):
+		board_x : int = 2
+	elif (350 < x < 450):
+		board_x : int = 3
+	elif (450 < x < 550):
+		board_x : int = 4
+	elif (550 < x < 650):
+		board_x : int = 5
+	elif (650 < x < 750):
+		board_x : int = 6
+	elif (750 < x < 850):
+		board_x : int = 7
+	#Translate y to board_y
+	if (50 < y < 150):
+		board_y : int = 7
+	elif (150 < y < 250):
+		board_y : int = 6
+	elif (250 < y < 350):
+		board_y : int = 5
+	elif (350 < y < 450):
+		board_y : int = 4
+	elif (450 < y < 550):
+		board_y : int = 3
+	elif (550 < y < 650):
+		board_y : int = 2
+	elif (650 < y < 750):
+		board_y : int = 1
+	elif (750 < y < 850):
+		board_y : int = 0
+	#Get the tile selected
+	tile_selected: game_objects.Case = board.board[board_y][board_x]
+	if (tile_selected.piece == None):
+		return (None)
+	return (tile_selected)
+
+def get_target_position(clic_position: tuple[int, int]) -> tuple[int, int]:
+	x = clic_position[0]
+	y = clic_position[1]
+	#Translate x to target_x
+	if (50 < x < 150):
+		target_x : int = 1
+	elif (150 < x < 250):
+		target_x : int = 2
+	elif (250 < x < 350):
+		target_x : int = 3
+	elif (350 < x < 450):
+		target_x : int = 4
+	elif (450 < x < 550):
+		target_x : int = 5
+	elif (550 < x < 650):
+		target_x : int = 6
+	elif (650 < x < 750):
+		target_x : int = 7
+	elif (750 < x < 850):
+		target_x : int = 8
+	#Translate y to target_y
+	if (50 < y < 150):
+		target_y : int = 8
+	elif (150 < y < 250):
+		target_y : int = 7
+	elif (250 < y < 350):
+		target_y : int = 6
+	elif (350 < y < 450):
+		target_y : int = 5
+	elif (450 < y < 550):
+		target_y : int = 4
+	elif (550 < y < 650):
+		target_y : int = 3
+	elif (650 < y < 750):
+		target_y : int = 2
+	elif (750 < y < 850):
+		target_y : int = 1
+	return ((target_x, target_y))

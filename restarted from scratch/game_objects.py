@@ -5,7 +5,7 @@ from constants import BACKGROUND_COLOR, WHITE_TILE_COLOR, BLACK_TILE_COLOR, GAME
 #BOARD
 class Board:
 	def __init__(self):
-		self.board: list[list[Case | None]] = [
+		self.board: list[list[Case]] = [
 			[Case("white", Rook("black"), 1, 8), Case("black", Knight("black"), 2, 8), Case("white", Bishop("black"), 3, 8), Case("black", Queen("black"), 4, 8), Case("white", King("black"), 5, 8), Case("black", Bishop("black"), 6, 8), Case("white", Knight("black"), 7, 8), Case("black", Rook("black"), 8, 8)],
 			[Case("black", Pawn("black"), 1, 7), Case("white", Pawn("black"), 2, 7), Case("black", Pawn("black"), 3, 7), Case("white", Pawn("black"), 4, 7), Case("black", Pawn("black"), 5, 7), Case("white", Pawn("black"), 6, 7), Case("black", Pawn("black"), 7, 7), Case("white", Pawn("black"), 8, 7)],
 			[Case("white", None, 1, 6), Case("black", None, 2, 6), Case("white", None, 3, 6), Case("black", None, 4, 6), Case("white", None, 5, 6), Case("black", None, 6, 6), Case("white", None, 7, 6), Case("black", None, 8, 6)],
@@ -114,6 +114,9 @@ class Move:
 		self.capture: bool = ...
 		self.check: bool = ...
 		self.checkmate: bool = ...
+
+	def play(self, board: Board):
+		...
 
 	def display(self, screen):
 		...
