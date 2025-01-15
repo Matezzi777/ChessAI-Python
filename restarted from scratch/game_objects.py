@@ -35,7 +35,6 @@ class Board:
 class Piece:
 	def __init__(self):
 		self.color: str
-		self.id: int
 		self.type: str
 		self.image: str
 
@@ -61,6 +60,7 @@ class King(Piece):
 	def __init__(self, color):
 		self.color = color
 		self.image = f"./pieces/{color}_king.png"
+		self.type = "King"
 
 	def get_valid_moves(self, board: Board) -> list:
 		...
@@ -69,6 +69,7 @@ class Queen(Piece):
 	def __init__(self, color):
 		self.color = color
 		self.image = f"./pieces/{color}_queen.png"
+		self.type = "Queen"
 
 	def get_valid_moves(self, board: Board) -> list:
 		...
@@ -77,6 +78,7 @@ class Bishop(Piece):
 	def __init__(self, color):
 		self.color = color
 		self.image = f"./pieces/{color}_bishop.png"
+		self.type = "Bishop"
 
 	def get_valid_moves(self, board: Board) -> list:
 		...
@@ -85,6 +87,7 @@ class Knight(Piece):
 	def __init__(self, color):
 		self.color = color
 		self.image = f"./pieces/{color}_knight.png"
+		self.type = "Knight"
 
 	def get_valid_moves(self, board: Board) -> list:
 		...
@@ -93,14 +96,16 @@ class Rook(Piece):
 	def __init__(self, color):
 		self.color = color
 		self.image = f"./pieces/{color}_rook.png"
+		self.type = "Rook"
 
 	def get_valid_moves(self, board: Board) -> list:
 		...
 
 class Pawn(Piece):
 	def __init__(self, color):
-		self.color = color
-		self.image = f"./pieces/{color}_pawn.png"
+		self.color: str = color
+		self.image: str = f"./pieces/{color}_pawn.png"
+		self.type: str = "Pawn"
 
 	def get_valid_moves(self, board: Board) -> list:
 		...
@@ -127,7 +132,7 @@ class Case:
 		self.piece: Piece | None = piece
 		self.position: tuple[int, int] = (col, row)
 		self.column: str = f"{['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'][col-1]}"
-		self.row: str = f"{8-row}"
+		self.row: str = f"{9-row}"
 		self.algrebric_notation: str = f"{self.column}{self.row}"
 
 	def is_empty(self) -> bool:
