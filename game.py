@@ -1,196 +1,195 @@
 import pygame
-from board import *
-from graphics import *
-from pieces import PIECES, Move
-from moves import *
-
-# Définition de constantes
-LEFT_CLICK = 1
-RIGHT_CLICK = 3
+import sys
+import buttons
+import game_objects
+from constants import GAME_LETTERS_COLOR, GAME_BUTTONS_IDLE_COLOR, GAME_BUTTONS_HOVER_COLOR, LEFT_CLIC, RIGHT_CLIC
 
 class Game:
-    def __init__(self, screen, letter_font):
-        self.screen = screen                                                #La variable de la fenêtre de jeu
-        self.letter_font = letter_font                                      #La police de caractère des chiffres et lettres des lignes et colonnes
-        self.running: bool = True                                           #La variable permettant d'arrêter la boucle de jeu
-        self.clock = pygame.time.Clock()                                    #Un genre de métronome permettant de lisser les performance entre les différents ordinateurs à 60fps
-        self.board = init_board()                                           #Un tableau de caractères représentant le plateau
-        # self.board = init_board2()                                          #Un tableau de caractères représentant le plateau
-        self.turn: int = 1                                                  #Le compteur de tour pour savoir si c'est au tour des Noirs ou des Blancs
-        self.piece_selected: tuple[int, int] | None = None                  #Un tuple représentant la position de la pièce sélectionnée s'il y en a une. Vaut None si aucune pièce n'est sélectionnée
-        self.valid_moves: list[tuple[int, int]] | None = None               #La liste des tuples représentant les coups légaux de la pièce sélectionnée s'il y en a une. Vaut None si aucune pièce n'est sélectionnée
-        self.last_move: Move | None = None
-        self.piece: Piece | None = None
+	def __init__(self, screen):
+		#Tech Variables
+		self.running: bool = True
+		self.screen: pygame.Surface = screen
+		self.clock = pygame.time.Clock()
+		#Game Variables
+		self.buttons: list[buttons.Button] = [
+			buttons.ButtonGetBetterMove((1100, 180), GAME_BUTTONS_IDLE_COLOR, GAME_BUTTONS_HOVER_COLOR),
+			buttons.ButtonAnalyzePosition((1100, 360), GAME_BUTTONS_IDLE_COLOR, GAME_BUTTONS_HOVER_COLOR),
+			buttons.ButtonTurnBoard((1100, 540), GAME_BUTTONS_IDLE_COLOR, GAME_BUTTONS_HOVER_COLOR),
+			buttons.ButtonResign((1100, 720), GAME_BUTTONS_IDLE_COLOR, GAME_BUTTONS_HOVER_COLOR)
+		]
+		self.board: game_objects.Board = game_objects.Board()
+		self.tile_selected: game_objects.Case | None = None
+		self.valid_moves: list[game_objects.Move] | None = None
+		self.last_move: game_objects.Move | None = None
+		self.turn: int = 1
 
-    def handling_events(self):
-        for event in pygame.event.get():
-            #Si l'event est un clic sur la fermeture de la fenêtre
-            if event.type == pygame.QUIT:
-                self.running = False
-            #Si l'event est une touche pressée
-            if event.type == pygame.KEYDOWN:
-                if (event.unicode == ' '):
-                    self.piece_selected = None
-                    self.valid_moves = None
-            #Si l'event est un clic
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                #Si l'utilisateur clique sur l'échiquier
-                if (50 < event.pos[0] < 850 and 50 < event.pos[1] < 850):
-                    #Clic gauche
-                    if (event.button == LEFT_CLICK):
-                        #Une pièce est sélectionnée
-                        if (self.piece_selected):
-                            #Si le clic est sur une autre pièce de la bonne couleur
-                            if (clicked_on_allied_piece(self.board, event.pos, self.turn)):
-                                self.piece_selected = (clickx_to_boardx(event.pos[0]),clicky_to_boardy(event.pos[1]))
-                                self.valid_moves = get_valid_moves(self.board, self.piece_selected, self.last_move)
-                            #Si le coup est légal
-                            elif (self.valid_moves and (clickx_to_boardx(event.pos[0]), clicky_to_boardy(event.pos[1])) in self.valid_moves):
-                                self.last_move = Move(self.board[self.piece_selected[0]][self.piece_selected[1]], self.piece_selected, (clickx_to_boardx(event.pos[0]), clicky_to_boardy(event.pos[1])), self.board[clicky_to_boardy(event.pos[1])][clickx_to_boardx(event.pos[0])])
-                                make_move(self.board, self.piece_selected, (clickx_to_boardx(event.pos[0]), clicky_to_boardy(event.pos[1])))
-                                self.piece_selected = None
-                                self.valid_moves = None
-                                self.turn += 1
-                            #Si le coup est illégal
-                            else:
-                                self.piece_selected = None
-                                self.valid_moves = None
-                        #Aucune pièce n'est sélectionnée
-                        else:
-                            # #Clic sur une pièce de la bonne couleur
-                            # if (clicked_on_allied_piece(self.board, event.pos, self.turn)):
-                            #     self.piece_selected = (clickx_to_boardx(event.pos[0]),clicky_to_boardy(event.pos[1]))
-                            #     self.valid_moves = get_valid_moves(self.board, self.piece_selected)
-                            if (clicked_on_allied_piece(self.board, event.pos, self.turn)):
-                                self.piece_selected = (clickx_to_boardx(event.pos[0]),clicky_to_boardy(event.pos[1]))
-                                self.valid_moves = get_valid_moves(self.board, self.piece_selected, self.last_move)
-                    #Clic droit
-                    elif (event.button == RIGHT_CLICK):
-                        if (self.piece_selected):
-                            self.piece_selected = None
-                            self.valid_moves = None
+	def update(self):
+		mouse_position = pygame.mouse.get_pos()
+		for button in self.buttons:						#HOVER BUTTONS
+			button.change_color(mouse_position)
+			button.update(self.screen)
 
-    def update(self):
-        ...
+	def handle_events(self):
+		mouse_position = pygame.mouse.get_pos()
+		for event in pygame.event.get():
+			if event.type == pygame.QUIT:				#CROIX CLOSE
+				print("GAME : Close Window clicked")
+				pygame.quit()
+				sys.exit()
+			if event.type == pygame.MOUSEBUTTONDOWN:	#GESTION DES CLICS
+				if event.button == LEFT_CLIC:				#CLIC GAUCHE
+					for button in self.buttons:
+						if (button.check_for_input(mouse_position)):
+							button.callback(self.screen)
+					if (is_on_board(mouse_position)):
+						if (self.tile_selected == None):		#Si aucune case n'était sélectionnée
+							clicked_tile: game_objects.Case = get_tile_selected(mouse_position, self.board, self.turn)
+							if (clicked_tile.piece is not None):
+								self.tile_selected: game_objects.Case = clicked_tile
+							if (self.tile_selected is not None):
+								print(f"Case sélectionnée : {self.tile_selected.algrebric_notation}")
+								piece_selected: game_objects.Piece = self.tile_selected.piece
+								print(f"	Pièce sélectionnée : {piece_selected.type} {piece_selected.color}")
+								self.valid_moves = piece_selected.get_valid_moves(self.board)
+								print(f"		Moves valides :")
+								if (self.valid_moves is not None):
+									for move in self.valid_moves:
+										print(f"		- {move.origin[0]}{move.origin[1]} -> {move.target[0]}{move.target[1]}")
+								else:
+									print("		- No valid moves.")
+							else:
+								print(f"Case sélectionnée : None")
+						else:									#Si une case était déjà sélectionnée
+							clicked_tile: game_objects.Case = get_tile_selected(mouse_position, self.board, self.turn)
+							if ()
+							proposed_move = game_objects.Move(self.tile_selected.piece, self.tile_selected.position, get_target_position(mouse_position))
+							if (self.valid_moves is not None):
+								if (proposed_move in self.valid_moves):
+									print("			Move valide !")
+									proposed_move.play(self.board)
+									self.turn += 1
+								else:
+									print("			Move invalide !")
+							self.valid_moves = None
+							self.tile_selected = None
+							print("Case sélectionnée : None")
+								
+				if event.button == RIGHT_CLIC:				#CLIC DROIT
+					if (is_on_board(mouse_position)):
+						self.tile_selected = None
+						self.valid_moves = None
+			if event.type == pygame.KEYDOWN:			#APPUIS DE TOUCHES
+				if event.key == pygame.K_SPACE:
+					self.tile_selected = None
+					self.valid_moves = None
 
-    def display(self):
-        put_background(self.screen, self.letter_font)
-        # if (self.piece_selected and self.valid_moves):
-        if (self.piece and self.valid_moves):
-            for move in self.valid_moves:
-                place_valid_move(self.screen, move[0], move[1])
-        put_pieces(self.screen, self.board, PIECES)
-        # put_pieces2(self.screen, self.board)
-        pygame.display.flip()
+	def display(self):
+		self.board.display(self.screen)
+		for button in self.buttons:
+			button.update(self.screen)
+		if (self.valid_moves is not None):
+			for move in self.valid_moves:
+				move.display(self.screen)
+		pygame.display.flip()
 
-    def run(self):
-        while self.running:
-            self.handling_events()
-            self.update()
-            self.display()
-            self.clock.tick(60)
+	def run(self):
+		while (self.running):
+			self.update()
+			self.handle_events()
+			self.display()
 
-####################################################### FUNCTIONS #######################################################
+#Fonctions
 
-#Effectue le mouvement sélectionné
-def make_move(board, origin: tuple[int, int], target: tuple[int, int]) -> None:
-    piece = board[origin[1]][origin[0]]
-    
-    if (piece in ['K', 'Q', 'B', 'N', 'R', 'P']):
-        enemy_pieces = ['k', 'q', 'b', 'n', 'r', 'p']
-    else:
-        enemy_pieces = ['K', 'Q', 'B', 'N', 'R', 'P']
-    
-    piece_on_target = board[target[1]][target[0]]
-    
-    board[origin[1]][origin[0]] = ' '
-    board[target[1]][target[0]] = piece
+#Retourne True si le clic est sur le board, sinon False
+def is_on_board(position: tuple[int, int]) -> bool:
+	x = position[0]
+	y = position[1]
+	if ((50 < x < 850) and (50 < y < 850) and (not(x in [150,250,350,450,550,650,750])) and (not(y in [150,250,350,450,550,650,750]))):
+		return (True)
+	return (False)
 
-    if (piece_on_target in enemy_pieces):
-        pygame.mixer.music.load('sounds/capture_sound.mp3')
-        pygame.mixer.music.play()
-    else:
-        pygame.mixer.music.load('sounds/move_sound.mp3')
-        pygame.mixer.music.play()
+#Retourne la Case cliquée si une pièce s'y trouve, sinon None
+def get_tile_selected(position: tuple[int, int], board: game_objects.Board, turn: int) -> game_objects.Case | None:
+	x : int = position[0]
+	y : int = position[1]
+	#Look at which player's turn it is
+	if (turn % 2 == 0):
+		player_color: str = "black"
+	else:
+		player_color: str = "white"
+	#Translate x to board_x
+	if (50 < x < 150):
+		board_x : int = 0
+	elif (150 < x < 250):
+		board_x : int = 1
+	elif (250 < x < 350):
+		board_x : int = 2
+	elif (350 < x < 450):
+		board_x : int = 3
+	elif (450 < x < 550):
+		board_x : int = 4
+	elif (550 < x < 650):
+		board_x : int = 5
+	elif (650 < x < 750):
+		board_x : int = 6
+	elif (750 < x < 850):
+		board_x : int = 7
+	#Translate y to board_y
+	if (50 < y < 150):
+		board_y : int = 7
+	elif (150 < y < 250):
+		board_y : int = 6
+	elif (250 < y < 350):
+		board_y : int = 5
+	elif (350 < y < 450):
+		board_y : int = 4
+	elif (450 < y < 550):
+		board_y : int = 3
+	elif (550 < y < 650):
+		board_y : int = 2
+	elif (650 < y < 750):
+		board_y : int = 1
+	elif (750 < y < 850):
+		board_y : int = 0
+	#Get the tile selected
+	tile_selected: game_objects.Case = board.board[board_y][board_x]
+	return (tile_selected)
 
-
-
-#Retourne la liste des mouvements légaux pour la pièce sélectionnée
-def get_valid_moves(board, piece_position: tuple[int, int], last_move: Move) -> list[tuple[int, int]] | None:
-    valid_moves: list[tuple[int, int]] = []
-    piece_selected = board[piece_position[1]][piece_position[0]]
-    print(f"Piece selected : '{piece_selected}'.")
-    if (piece_selected == 'P' or piece_selected == 'p'):
-        valid_moves = get_pawn_valid_moves(board, piece_selected, piece_position[0], piece_position[1], last_move)
-    elif (piece_selected == 'K' or piece_selected == 'k'):
-        valid_moves = get_king_valid_moves(board, piece_selected, piece_position[0], piece_position[1])
-    elif (piece_selected == 'Q' or piece_selected == 'q'):
-        valid_moves = get_queen_valid_moves(board, piece_selected, piece_position[0], piece_position[1])
-    elif (piece_selected == 'B' or piece_selected == 'b'):
-        valid_moves = get_bishop_valid_moves(board, piece_selected, piece_position[0], piece_position[1])
-    elif (piece_selected == 'N' or piece_selected == 'n'):
-        valid_moves = get_knight_valid_moves(board, piece_selected, piece_position[0], piece_position[1])
-    elif (piece_selected == 'R' or piece_selected == 'r'):
-        valid_moves = get_rook_valid_moves(board, piece_selected, piece_position[0], piece_position[1])
-    else:
-        print(f"ERROR : Unknown piece selected.")
-
-    return (valid_moves)
-
-#Retourne la colonne correspondante à la case cliquée (0-7)
-def clickx_to_boardx(posx: int) -> int:
-    if (50 < posx <= 150):
-        return (0)
-    elif (150 < posx <= 250):
-        return (1)
-    elif (250 < posx <= 350):
-        return (2)
-    elif (350 < posx <= 450):
-        return (3)
-    elif (450 < posx <= 550):
-        return (4)
-    elif (550 < posx <= 650):
-        return (5)
-    elif (650 < posx <= 750):
-        return (6)
-    elif (750 < posx < 850):
-        return (7)
-
-#Retourne la rangée correspondante à la case cliquée (0-7)
-def clicky_to_boardy(posy: int) -> int:
-    if (50 < posy <= 150):
-        return (0)
-    elif (150 < posy <= 250):
-        return (1)
-    elif (250 < posy <= 350):
-        return (2)
-    elif (350 < posy <= 450):
-        return (3)
-    elif (450 < posy <= 550):
-        return (4)
-    elif (550 < posy <= 650):
-        return (5)
-    elif (650 < posy <= 750):
-        return (6)
-    elif (750 < posy < 850):
-        return (7)
-
-#Retourne True si le clic se situe sur une pièce de la couleur du joueur dont c'est le tour sinon renvoie False
-def clicked_on_allied_piece(board, position: tuple[int, int], tour: int) -> bool:
-    if (tour % 2 == 0):
-        allied_pieces = ['k', 'q', 'b', 'n', 'r', 'p']
-        # color = 'black'
-    else:
-        allied_pieces = ['K', 'Q', 'B', 'N', 'R', 'P']
-        # color = 'white'
-
-    x = clickx_to_boardx(position[0])
-    y = clicky_to_boardy(position[1])
-
-    # if (board[y][x] == None):
-    if (board[y][x] in allied_pieces):
-        return (True)
-    else:
-    # if (board[y][x].color == color):
-        return (False)
-    # return (False)
+def get_target_position(clic_position: tuple[int, int]) -> tuple[int, int]:
+	x = clic_position[0]
+	y = clic_position[1]
+	#Translate x to target_x
+	if (50 < x < 150):
+		target_x : int = 1
+	elif (150 < x < 250):
+		target_x : int = 2
+	elif (250 < x < 350):
+		target_x : int = 3
+	elif (350 < x < 450):
+		target_x : int = 4
+	elif (450 < x < 550):
+		target_x : int = 5
+	elif (550 < x < 650):
+		target_x : int = 6
+	elif (650 < x < 750):
+		target_x : int = 7
+	elif (750 < x < 850):
+		target_x : int = 8
+	#Translate y to target_y
+	if (50 < y < 150):
+		target_y : int = 8
+	elif (150 < y < 250):
+		target_y : int = 7
+	elif (250 < y < 350):
+		target_y : int = 6
+	elif (350 < y < 450):
+		target_y : int = 5
+	elif (450 < y < 550):
+		target_y : int = 4
+	elif (550 < y < 650):
+		target_y : int = 3
+	elif (650 < y < 750):
+		target_y : int = 2
+	elif (750 < y < 850):
+		target_y : int = 1
+	return ((target_x, target_y))
