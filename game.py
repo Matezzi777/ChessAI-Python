@@ -61,7 +61,6 @@ class Game:
 								print(f"Case sélectionnée : None")
 						else:									#Si une case était déjà sélectionnée
 							clicked_tile: game_objects.Case = get_tile_selected(mouse_position, self.board, self.turn)
-							if ()
 							proposed_move = game_objects.Move(self.tile_selected.piece, self.tile_selected.position, get_target_position(mouse_position))
 							if (self.valid_moves is not None):
 								if (proposed_move in self.valid_moves):
@@ -152,7 +151,7 @@ def get_tile_selected(position: tuple[int, int], board: game_objects.Board, turn
 	elif (750 < y < 850):
 		board_y : int = 0
 	#Get the tile selected
-	tile_selected: game_objects.Case = board.board[board_y][board_x]
+	tile_selected: game_objects.Case = board.board[7-board_y][board_x]
 	return (tile_selected)
 
 def get_target_position(clic_position: tuple[int, int]) -> tuple[int, int]:
