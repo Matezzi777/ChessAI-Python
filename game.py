@@ -42,7 +42,7 @@ class Game:
 						if (button.check_for_input(mouse_position)):
 							button.callback(self.screen)
 					if (is_on_board(mouse_position)):
-						if (self.tile_selected == None):		#Si aucune case n'était sélectionnée
+						if (self.tile_selected == None):																						#Si aucune case n'était sélectionnée
 							clicked_tile: game_objects.Case = get_tile_selected(mouse_position, self.board, self.turn)
 							if (clicked_tile.piece is not None):
 								self.tile_selected: game_objects.Case = clicked_tile
@@ -59,7 +59,7 @@ class Game:
 									print("		- No valid moves.")
 							else:
 								print(f"Case sélectionnée : None")
-						else:									#Si une case était déjà sélectionnée
+						else:																													#Si une case était déjà sélectionnée
 							clicked_tile: game_objects.Case = get_tile_selected(mouse_position, self.board, self.turn)
 							proposed_move = game_objects.Move(self.tile_selected.piece, self.tile_selected.position, get_target_position(mouse_position))
 							if (self.valid_moves is not None):
@@ -111,11 +111,10 @@ def is_on_board(position: tuple[int, int]) -> bool:
 def get_tile_selected(position: tuple[int, int], board: game_objects.Board, turn: int) -> game_objects.Case | None:
 	x : int = position[0]
 	y : int = position[1]
-	#Look at which player's turn it is
 	if (turn % 2 == 0):
-		player_color: str = "black"
+		player: str = "white"
 	else:
-		player_color: str = "white"
+		player:str = "black"
 	#Translate x to board_x
 	if (50 < x < 150):
 		board_x : int = 0
@@ -151,8 +150,10 @@ def get_tile_selected(position: tuple[int, int], board: game_objects.Board, turn
 	elif (750 < y < 850):
 		board_y : int = 0
 	#Get the tile selected
-	tile_selected: game_objects.Case = board.board[7-board_y][board_x]
-	return (tile_selected)
+	tile_selected: game_objects.Case = board.board[board_y][board_x]
+	if (player == tile_selected.piece.color):
+		return (tile_selected)
+	return (None)
 
 def get_target_position(clic_position: tuple[int, int]) -> tuple[int, int]:
 	x = clic_position[0]

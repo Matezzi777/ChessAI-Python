@@ -132,7 +132,7 @@ class Case:
 		self.piece: Piece | None = piece
 		self.position: tuple[int, int] = (col, row)
 		self.column: str = f"{['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'][col-1]}"
-		self.row: str = f"{9-row}"
+		self.row: str = f"{9 - row}"
 		self.algrebric_notation: str = f"{self.column}{self.row}"
 
 	def is_empty(self) -> bool:
